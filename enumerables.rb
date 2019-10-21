@@ -1,6 +1,5 @@
 
 module Enumerable
-
 def my_each
  i = 0
  while i < size
@@ -21,14 +20,32 @@ end
 
 def my_select 
   result = []
-  my_each {|item| return true if yield (item) }
+  my_each {|item| return.push(item) if yield (item) }
   result 
 end
 
 def my_all?
+  my_each {|item| return false if yield(item)}
+  false
+end
+
+def my_any?
   my_each {|item| return true if yield(item)}
   false
 end
+
+def my_none?
+  my_each {|item| return false if yield(item)}
+  false
+end
+
+def my_count
+ count = 0
+ my_each {|item| count +=1 if yield(item)}
+ count
+end
+
+
 
 
 
