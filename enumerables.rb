@@ -1,23 +1,23 @@
 
 module Enumerable
-  
-def my_each
- i = 0
- while i < size
-  yield(self[i])
-  i += 1 
-  end
- self
-end
 
-def my_each_whit_index
- i = 0
- while i < size 
-  yield(self[i], i)
-  i += 1
+ def my_each
+  i = 0
+  while i < size
+   yield(self[i])
+   i += 1 
+   end
   self
  end
-end
+
+ def my_each_whit_index
+  i = 0
+  while i < size 
+   yield(self[i], i)
+   i += 1
+   self
+  end
+ end
 
 def my_select 
   result = []
@@ -52,13 +52,13 @@ def my_map
  result
 end
 
-#11 =>  puts arr.my_map(proc)
+# 11 =>  puts arr.my_map(proc)
 
 def my_inject(acc=0)
   result = []
   my_each { |item| acc = yield(acc, item) }
   acc
- end
+end
 end
 
 arr [1, 2, 3, 4]
@@ -66,12 +66,12 @@ arr [1, 2, 3, 4]
 def multiple_els arr
   arr.my_inject(1) { |acc, item| acc * item }
 end
-puts multiple_els([2 ,4, 5])
+puts multiple_els([2, 4, 5])
 
-#12
-puts arr.my_map { |item| item >=2}
+# 12
+puts arr.my_map { |item| item >= 2 }
 puts
-proc =proc{ |item| item >= 2 }
+proc = proc{ |item| item >= 2 }
 puts arr.my_map(proc)
 
 
