@@ -1,4 +1,3 @@
-
 module Enumerable
   def my_each
     i = 0
