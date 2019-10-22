@@ -2,6 +2,8 @@
 
 module Enumerable
   def my_each
+    return to_enum(:my_each) unless block_given?
+
     i = 0
     while i < size
       yield(self[i])
@@ -10,7 +12,9 @@ module Enumerable
     self
   end
 
-  def my_each_whit_index
+  def my_each_with_index
+    return to_enum(:my_each_with_index) unless block_given?
+
     i = 0
     while i < size 
       yield(self[i], i)
@@ -20,29 +24,48 @@ module Enumerable
   end
 
   def my_select 
+    return to_enum(:my_select) unless block_given?
+
     result = []
-    my_each {|item| return.push(item) if yield (item) }
+    my_each { |item| return.push(item) if yield (item) }
     result 
   end
 
-  def my_all?
-    my_each {|item| return false if yield(item)}
-    false
+  def my_all?(pattern = nil)
+    result = true
+    if block_given?
+      my_each { |ele| result &= (yield ele) }
+    elsif pattern
+      my_each { |ele| result &= pattern === ele }
+    else
+      my_each { |ele| result &= ele }
+    end
+    result
   end
 
-  def my_any?
-    my_each {|item| return true if yield(item)}
+  def my_any?(pattern = nil)
+    if block_given?
+      my_each { |ele| return true if yield ele }
+    elsif pattern
+      my_each { |ele| return true if pattern === ele }
+    else
+      my_each { |ele| return true if ele }
+    end
     false
   end
 
   def my_none?
+    return to_enum(:my_none) unless block_given?
+    
     my_each {|item| return false if yield(item)}
     false
   end
 
   def my_count
     count = 0
-    my_each {|item| count +=1 if yield(item)}
+    if block_given?
+      my_each {|item| count +=1 if yield(item)}
+    else
     count
   end
 
@@ -73,29 +96,3 @@ puts arr.my_map { |item| item >= 2 }
 puts
 proc = proc{ |item| item >= 2 }
 puts arr.my_map(proc)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
