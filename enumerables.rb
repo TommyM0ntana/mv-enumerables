@@ -61,7 +61,6 @@ module Enumerable
   end
 end
   
-  
 arr [1, 2, 3, 4]
 
 def multiple_els arr
