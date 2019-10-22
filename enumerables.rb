@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Enumerable
   def my_each
     i = 0
@@ -56,7 +57,7 @@ module Enumerable
     result = []
     my_each { |item| acc = yield(acc, item) }
     acc
-    end
+  end
 end
   
 arr [1, 2, 3, 4]
