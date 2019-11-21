@@ -7,7 +7,7 @@ module Enumerable
     i = 0
     while i < size
       yield(self[i])
-      i += 1 
+      i += 1
     end
     self
   end
@@ -16,57 +16,63 @@ module Enumerable
     return to_enum(:my_each_with_index) unless block_given?
 
     i = 0
-    while i < size 
+    while i < size
       yield(self[i], i)
       i += 1
-    self
     end
+    self
   end
 
-  def my_select 
+  def my_select
     return to_enum(:my_select) unless block_given?
 
+    i = 0
     result = []
-    my_each { |item| return.push(item) if yield (item) }
-    result 
+    while i < length
+      answer = yield(self[i])
+      result << self[i] unless answer == false
+      i += 1
+    end
+    result
   end
 
   def my_all?(pattern = nil)
     result = true
     if block_given?
-      my_each { |ele| result &= (yield ele) }
+      my_each { |item| result &= (yield item) }
     elsif pattern
-      my_each { |ele| result &= pattern === ele }
+      my_each { |item| result &= pattern == item }
     else
-      my_each { |ele| result &= ele }
+      my_each { |item| result &= item }
     end
     result
   end
 
   def my_any?(pattern = nil)
     if block_given?
-      my_each { |ele| return true if yield ele }
+      my_each { |item| return true if yield item }
     elsif pattern
-      my_each { |ele| return true if pattern === ele }
+      my_each { |item| return true if pattern == item }
     else
-      my_each { |ele| return true if ele }
+      my_each { |item| return true if item }
     end
     false
   end
 
   def my_none?
     return to_enum(:my_none) unless block_given?
-    
-    my_each {|item| return false if yield(item)}
+
+    my_each { |item| return false if yield(item) }
     false
   end
 
   def my_count
     count = 0
     if block_given?
-      my_each {|item| count +=1 if yield(item)}
+      my_each { |item| count += 1 if yield(item) }
     else
-    count
+      count
+    end
   end
 
   def my_map
@@ -75,24 +81,20 @@ module Enumerable
     result
   end
 
-   # 11 =>  puts arr.my_map(proc)
-
-  def my_inject(acc=0)
-    result = []
+  def my_inject(acc = 0)
     my_each { |item| acc = yield(acc, item) }
     acc
   end
 end
-  
-arr [1, 2, 3, 4]
 
-def multiple_els arr
+#arr[1, 2, 3, 4]
+
+def multiple_els(arr)
   arr.my_inject(1) { |acc, item| acc * item }
 end
-puts multiple_els([2, 4, 5])
 
-# 12
-puts arr.my_map { |item| item >= 2 }
-puts
-proc = proc{ |item| item >= 2 }
-puts arr.my_map(proc)
+
+r = [1,2,3,4]
+puts r.my_map{|n| n*2}
+
+puts r.map{|n| n*2}
