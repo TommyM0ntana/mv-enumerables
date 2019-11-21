@@ -87,14 +87,6 @@ module Enumerable
   end
 end
 
-#arr[1, 2, 3, 4]
-
 def multiple_els(arr)
   arr.my_inject(1) { |acc, item| acc * item }
 end
-
-
-r = [1,2,3,4]
-puts r.my_map{|n| n*2}
-
-puts r.map{|n| n*2}
