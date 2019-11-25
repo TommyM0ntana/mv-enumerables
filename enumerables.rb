@@ -47,7 +47,7 @@ module Enumerable
     true
   end
 
-  def my_any?(pattern = nil)
+  def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if block_given? && pattern.nil?
       my_each { |item| return true if item }
     elsif pattern.is_a? Regexp
@@ -62,7 +62,7 @@ module Enumerable
     false
   end
 
-  def my_none?(pattern = nil)
+  def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if block_given? && patern.nil?
       my_each { |item| return false if item }
     elsif pattern.is_a? Regexp
@@ -77,7 +77,7 @@ module Enumerable
     true
   end
 
-  def my_count(item = nil, &block)
+  def my_count(item = nil, &block) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     count = 0
     my_each { |e| count += 1 if block.call(e) } if block_given?
     return count if block_given?
@@ -97,7 +97,7 @@ module Enumerable
     arr
   end
 
-  def my_inject(initial = nil, sym = nil, &block)
+  def my_inject(initial = nil, sym = nil, &block) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     acc = initial || first
     acc = first if initial.class == Symbol
     acc = initial if !initial.class == Symbol
