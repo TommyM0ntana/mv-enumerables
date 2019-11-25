@@ -38,55 +38,73 @@ module Enumerable
 
   def my_all?(pattern = nil)
     if block_given?
-      my_each { |item| return unless(yield item) }
+      my_each { |item| return unless (yield item) }
     elsif pattern
-      my_each { |item| result &= pattern == item || pattern == item.class }
+      my_each { |item| result & pattern == item || pattern == item.class }
     else
-      my_each { |item| result &= item }
+      my_each { |item| result & item }
     end
     true
   end
 
   def my_any?(pattern = nil)
-    if block_given?
-      my_each { |item| return true if yield(item) }
+    if block_given? && pattern.nil?
+      my_each { |item| return true if item }
     elsif pattern.is_a? Regexp
       my_each { |item| return true if item =~ pattern }
     elsif pattern.is_a? Class
-      my_each { |item| return true if pattern == item.class }
+      my_each { |item| return true if item.is_a? pattern }
     elsif pattern
-      my_each { |item| return true if pattern == item || pattern == item.class }
-    else
-      my_each { |item| return true if(item) }
+      my_each { |item| return true if item == pattern }
+    elsif !pattern && !block_given?
+      my_each { |item| return true if item }
     end
     false
   end
 
-  def my_none?
-    return to_enum(:my_none) unless block_given?
-
-    my_each { |item| return false if yield(item) }
-    false
+  def my_none?(pattern = nil)
+    if block_given? && patern.nil?
+      my_each { |item| return false if item }
+    elsif pattern.is_a? Regexp
+      my_each { |item| return false if item =~ pattern }
+    elsif pattern.is_a? Class
+      my_each { |item| return false if item.is_a? pattern }
+    elsif pattern
+      my_each { |item| return false if pattern == item }
+    if !pattern && !block_given?
+        my_each { |item| return false if item } 
+    end
+    true
   end
 
-  def my_count
+  def my_count(item = nil, &block)
     count = 0
-    if block_given?
-      my_each { |item| count += 1 if yield(item) }
-    else
-      count
-    end
+    my_each { |e| count += 1 if block.call(e) } if block_given?
+    return count if block_given?
+
+    my_each { |e| count += 1 if e == item } if item
+    return count if item
+
+    my_each { count += 1 } if !item && !block_given?
+    count
   end
 
-  def my_map
-    return to_enum unless block_given?
-    result = []
-    my_each { |item| result << yield(item) }
-    result
+  def my_map(&block)
+    return to_enum(:my_map) unless block_given?
+
+    arr = []
+    my_each { |item| arr << block.call(item) } if block_given?
+    arr
   end
 
-  def my_inject(acc = 0)
-    my_each { |item| acc = yield(acc, item) }
+  def my_inject(initial = nil, sym = nil, &block)
+    acc = initial || first
+    acc = first if initial.class == Symbol
+    acc = initial if !initial.class == Symbol
+    acc -= acc if acc != initial && acc.class != String
+    my_each { |e| acc = block.call(acc, e) } if block_given?
+    my_each { |e| acc = acc.send(sym, e) } if initial && sym
+    my_each { |e| acc = acc.send(initial, e) } if initial.class == Symbol
     acc
   end
 end
@@ -95,10 +113,4 @@ def multiple_els(arr)
   arr.my_inject(1) { |acc, item| acc * item }
 end
 
-abc = [1,2,3,4]
-array = [4, 3, 2, 6, 2, 8, 8, 3, 0, 4, 8, 3, 4, 8, 1, 5, 2, 5, 6, 3, 1, 8, 2, 1, 1, 5, 3, 6, 0, 4, 8, 6, 7, 6, 2, 4, 3, 8, 1, 3, 5, 1, 0, 2, 6, 1, 1, 2, 2, 1, 7, 5, 4, 5, 2, 3, 5, 1, 3, 4, 1, 4, 3, 2, 0, 5, 4, 7, 1, 4, 1, 1, 8, 6, 8, 7, 3, 7, 6, 3, 6, 8, 4, 1, 1, 3, 5, 8, 7, 1, 2, 2, 4, 5, 7, 2, 5, 8, 0, 0]
-
-
-
-puts [1, 2i, 3.14].any?(Numeric)  
-puts  [1, 2i, 3.14].my_any?(Numeric)
+puts multiple_els([2, 4, 5])
