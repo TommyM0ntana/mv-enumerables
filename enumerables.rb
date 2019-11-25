@@ -41,7 +41,7 @@ module Enumerable
     if block_given?
       my_each { |item| result &= (yield item) }
     elsif pattern
-      my_each { |item| result &= pattern == item }
+      my_each { |item| result &= pattern == item || pattern == item.class }
     else
       my_each { |item| result &= item }
     end
@@ -51,8 +51,12 @@ module Enumerable
   def my_any?(pattern = nil)
     if block_given?
       my_each { |item| return true if yield item }
+    elsif pattern.is_a? Regexp
+      my_each { |item| return true if item =~ pattern }
+    elsif pattern.is_a? Class
+      my_each { |item| return true if pattern == item.class }
     elsif pattern
-      my_each { |item| return true if pattern == item }
+      my_each { |item| return true if pattern == item || pattern == item.class }
     else
       my_each { |item| return true if item }
     end
@@ -76,6 +80,7 @@ module Enumerable
   end
 
   def my_map
+    return to_enum unless block_given?
     result = []
     my_each { |item| result << yield(item) }
     result
@@ -90,3 +95,10 @@ end
 def multiple_els(arr)
   arr.my_inject(1) { |acc, item| acc * item }
 end
+
+abc = [1,2,3,4]
+array = [4, 3, 2, 6, 2, 8, 8, 3, 0, 4, 8, 3, 4, 8, 1, 5, 2, 5, 6, 3, 1, 8, 2, 1, 1, 5, 3, 6, 0, 4, 8, 6, 7, 6, 2, 4, 3, 8, 1, 3, 5, 1, 0, 2, 6, 1, 1, 2, 2, 1, 7, 5, 4, 5, 2, 3, 5, 1, 3, 4, 1, 4, 3, 2, 0, 5, 4, 7, 1, 4, 1, 1, 8, 6, 8, 7, 3, 7, 6, 3, 6, 8, 4, 1, 1, 3, 5, 8, 7, 1, 2, 2, 4, 5, 7, 2, 5, 8, 0, 0]
+
+puts array.all?(Numeric)
+puts array.my_all?(Integer)
+
