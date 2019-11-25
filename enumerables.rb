@@ -71,7 +71,7 @@ module Enumerable
       my_each { |item| return false if item.is_a? pattern }
     elsif pattern
       my_each { |item| return false if pattern == item }
-    if !pattern && !block_given?
+    elsif !pattern && !block_given?
         my_each { |item| return false if item } 
     end
     true
@@ -114,3 +114,8 @@ def multiple_els(arr)
 end
 
 puts multiple_els([2, 4, 5])
+
+
+puts [nil, false].none? 
+
+puts [nil, false].my_none? 
