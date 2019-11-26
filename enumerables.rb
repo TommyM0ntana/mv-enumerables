@@ -4,9 +4,11 @@ module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
 
+    arr = self
+    arr.to_a
     i = 0
     while i < size
-      yield(self[i])
+      yield(arr[i])
       i += 1
     end
     self
@@ -36,34 +38,38 @@ module Enumerable
     result
   end
 
-  def my_all?(pattern = nil)
-    if block_given?
-      my_each { |item| return unless yield item }
+  def my_all?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    if block_given? && pattern.nil?
+      my_each { |item| return false unless yield item }
+    elsif pattern.is_a? Regexp
+      my_each { |item| return false unless item =~ pattern }
+    elsif pattern.is_a? Class
+      my_each { |item| return false unless item.is_a? pattern }
+    elsif pattern.nil? && !block_given?
+      my_each { |item| return false unless item }
     elsif pattern
-      my_each { |item| result & pattern == item || pattern == item.class }
-    else
-      my_each { |item| result & item }
+      my_each { |item| return false unless item == pattern }
     end
     true
   end
 
   def my_any?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if block_given? && pattern.nil?
-      my_each { |item| return true if item }
+      my_each { |item| return true if yield item }
     elsif pattern.is_a? Regexp
       my_each { |item| return true if item =~ pattern }
     elsif pattern.is_a? Class
       my_each { |item| return true if item.is_a? pattern }
     elsif pattern
       my_each { |item| return true if item == pattern }
-    elsif !pattern && !block_given?
+    elsif pattern.nil? && !block_given?
       my_each { |item| return true if item }
     end
     false
   end
 
   def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    if block_given? && patern.nil?
+    if block_given? && pattern.nil?
       my_each { |item| return false if item }
     elsif pattern.is_a? Regexp
       my_each { |item| return false if item =~ pattern }
