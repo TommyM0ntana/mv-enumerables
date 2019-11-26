@@ -18,4 +18,5 @@ Build custom methods for **Enumerable** module
 3. Source code: https://github.com/b-a-a-s/mv-enumerables
 
 4. Authors:
-**Tommy M0ntana** - [@TommyM0ntana](https://github.com/TommyM0ntana)
+
+
