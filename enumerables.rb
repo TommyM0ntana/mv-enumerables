@@ -4,8 +4,7 @@ module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
 
-    arr = self
-    arr.to_a
+    arr = self.class == Array ? self : to_a
     i = 0
     while i < size
       yield(arr[i])
@@ -70,13 +69,13 @@ module Enumerable
 
   def my_none?(pattern = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     if block_given? && pattern.nil?
-      my_each { |item| return false if item }
+      my_each { |item| return false if yield item }
     elsif pattern.is_a? Regexp
       my_each { |item| return false if item =~ pattern }
     elsif pattern.is_a? Class
       my_each { |item| return false if item.is_a? pattern }
     elsif pattern
-      my_each { |item| return false if pattern == item }
+      my_each { |item| return false if item == pattern }
     elsif !pattern && !block_given?
       my_each { |item| return false if item }
     end
